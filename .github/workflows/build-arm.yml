@@ -1,0 +1,58 @@
+on:
+  push:
+    tags:
+      - 'v*'
+name: Create ARM Builds
+jobs:
+  build:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: 'Release Notes and changelog'
+          draft: true 
+          prerelease: false
+  armv7_job:
+    runs-on: [self-hosted, Linux, ARM]
+    name: Build armv7l 
+    steps:
+      - uses: actions/checkout@v2.1.0
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - run: npm run fetch-libsodium
+      - run: npm install
+      - run: npm run prebuild
+      - run: tar --create --verbose --file ${{ github.ref }}-linux-armv7l.tar --directory "./prebuilds" .
+      - name: Update release
+        uses: johnwbyrd/update-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          asset: ./${{ github.ref }}-linux-armv7l.tar
+  aarch64_job:
+    runs-on: [self-hosted, Linux, ARM64]
+    name: Build aarch64 
+    steps:
+      - uses: actions/checkout@v2.1.0
+      - uses: uraimo/run-on-arch-action@v1.0.9
+        id: runcmd
+        with:
+          architecture: aarch64
+          distribution: ubuntu20.04
+          run: |
+            npm run fetch-libsodium
+            npm install
+            npm run prebuild
+            echo ::set-output name=buildfile::$(ls . | grep .tar)
+      - uses: actions/upload-artifact@v2
+        with:
+          path: ${{ steps.runcmd.outputs.buildfile }}

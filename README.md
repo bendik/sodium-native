@@ -1,6 +1,6 @@
 # sodium-native
 [![build status](https://travis-ci.org/sodium-friends/sodium-native.svg?branch=master)](https://travis-ci.org/sodium-friends/sodium-native)
-
+![.github/workflows/build-arm.yml](https://github.com/bendik/sodium-native/workflows/.github/workflows/build-arm.yml/badge.svg?event=release)
 Low level bindings for [libsodium](https://github.com/jedisct1/libsodium).
 
 ```
