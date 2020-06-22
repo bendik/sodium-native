@@ -56,16 +56,6 @@ jobs:
           body: 'Release Notes and changelog'
           draft: true 
           prerelease: false
-      - name: Upload aarch64 build
-        id: upload-aarch64
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ${{github.ref}}-linux-aarch64.tar
-          asset_name: libsodium-linux-aarch64.tar
-          asset_content_type: application/tar
       - name: Upload armv7l build
         id: upload-armv7l
         uses: actions/upload-release-asset@v1

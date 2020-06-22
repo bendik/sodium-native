@@ -1,6 +1,6 @@
 {
   "name": "sodium-native",
-  "version": "3.2.14",
+  "version": "3.2.15",
   "description": "Low level bindings for libsodium",
   "main": "index.js",
   "dependencies": {
