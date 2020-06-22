@@ -4,23 +4,6 @@ on:
       - 'v*'
 name: Create release and build binaries
 jobs:
-  release:
-    name: Create Release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: 'Release Notes and changelog'
-          draft: true 
-          prerelease: false
   armv7_job:
     runs-on: [self-hosted, Linux, ARM]
     name: Build armv7l 
@@ -33,11 +16,9 @@ jobs:
       - run: npm install
       - run: npm run prebuild
       - run: tar --create --verbose --file="$(git describe --tags)-linux-armv7l.tar" --directory "./prebuilds" .
-      - name: Upload build
-        uses: johnwbyrd/update-release@v1.0.0
+      - uses: actions/upload-artifact@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: ./${git describe --tag}-linux-armv7l.tar
+          path: './*.tar'
   aarch64_job:
     runs-on: [self-hosted, Linux, ARM64]
     name: Build aarch64 
@@ -50,8 +31,47 @@ jobs:
       - run: npm install
       - run: npm run prebuild
       - run: tar --create --verbose --file="$(git describe --tags)-linux-armv7l.tar" --directory "./prebuilds" .
-      - name: Upload build
-        uses: johnwbyrd/update-release@v1.0.0
+      - uses: actions/upload-artifact@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: ./${git describe --tag}-linux-armv7l.tar
+          path: './*.tar'
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Get builds
+        uses: actions/download-artifact@v2
+        with:
+          working-directory: ref/tags
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: 'Release Notes and changelog'
+          draft: true 
+          prerelease: false
+      - name: Upload aarch64 
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: ${{github.ref}}-linux-aarch64.tar
+          asset_name: libsodium-linux-aarch64.tar
+          asset_content_type: application/tar
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: ${{github.ref}}-linux-aarch64.tar 
+          asset_name: libsodium-linux-armv7l.tar
+          asset_content_type: application/tar
