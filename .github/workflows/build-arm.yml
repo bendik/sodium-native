@@ -32,7 +32,7 @@ jobs:
       - run: npm run fetch-libsodium
       - run: npm install
       - run: npm run prebuild
-      - run: tar --create --verbose --file="${{ github.ref }}-linux-armv7l.tar" --directory "./prebuilds" .
+      - run: tar --create --verbose --file="${{ github.tag }}-linux-armv7l.tar" --directory "./prebuilds" .
       - name: Upload build
         uses: johnwbyrd/update-release@v1.0.0
         with:
