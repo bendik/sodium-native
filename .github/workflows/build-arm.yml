@@ -37,7 +37,7 @@ jobs:
         uses: johnwbyrd/update-release@v1.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          files: ./$(git describe --tags)-linux-armv7l.tar
+          files: "./*-linux-armv7l.tar"
   aarch64_job:
     runs-on: [self-hosted, Linux, ARM64]
     name: Build aarch64 
@@ -54,4 +54,4 @@ jobs:
         uses: johnwbyrd/update-release@v1.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          files: ./$(git describe --tags)-linux-armv7l.tar
+          files: "./*-linux-armv7l.tar"
