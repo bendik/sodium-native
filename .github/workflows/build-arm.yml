@@ -17,7 +17,7 @@ jobs:
       - run: npm run prebuild
       - uses: actions/upload-artifact@v2
         with:
-          name: libsodium-linux-armv7l
+          name: linux-armv7l
           path: ./prebuilds
   aarch64_job:
     runs-on: [self-hosted, Linux, ARM64]
@@ -32,7 +32,7 @@ jobs:
       - run: npm run prebuild
       - uses: actions/upload-artifact@v2
         with:
-          name: libsodium-linux-aarch64
+          name: linux-aarch64
           path: ./prebuilds
   release:
     name: Create Release
@@ -44,7 +44,7 @@ jobs:
       - name: Get builds
         uses: actions/download-artifact@v2
         with:
-          working-directory: prebuilds
+          path: prebuilds
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -56,6 +56,11 @@ jobs:
           body: 'Release Notes and changelog'
           draft: true 
           prerelease: false
+      - run: ls prebuilds
+      - name: Compress builds
+        run: |
+          mkdir -p ref/tags
+          tar --create --verbose --file="$(git description --tags)-linux-armv7l.tar" --directory "prebuilds/linux-armv7l" ref/tags
       - name: Upload armv7l build
         id: upload-armv7l
         uses: actions/upload-release-asset@v1
@@ -63,6 +68,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: prebuilds/libsodium-linux-armv7l.zip 
-          asset_name: libsodium-linux-armv7l.zip
-          asset_content_type: application/zip
+          asset_path: ${{ github.ref }}-linux-armv7l.tar 
+          asset_name: ${{ github.ref }}-linux-armv7l.tar
