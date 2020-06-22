@@ -2,7 +2,7 @@ on:
   push:
     tags:
       - 'v*'
-name: Build Arm binaries and create release
+name: Create release and build binaries
 jobs:
   release:
     name: Create Release
@@ -32,8 +32,9 @@ jobs:
       - run: npm run fetch-libsodium
       - run: npm install
       - run: npm run prebuild
-      - run: tar --create --verbose --file ${{ github.ref }}-linux-armv7l.tar --directory "./prebuilds" .
-      - uses: johnwbyrd/update-release@v1.0.0
+      - run: tar --create --verbose --file="${{ github.ref }}-linux-armv7l.tar" --directory "./prebuilds" .
+      - name: Upload build
+        uses: johnwbyrd/update-release@v1.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: ./${{ github.ref }}-linux-armv7l.tar
@@ -42,16 +43,15 @@ jobs:
     name: Build aarch64 
     steps:
       - uses: actions/checkout@v2.1.0
-      - uses: uraimo/run-on-arch-action@v1.0.9
-        id: runcmd
+      - uses: actions/setup-node@v1
         with:
-          architecture: aarch64
-          distribution: ubuntu20.04
-          run: |
-            npm run fetch-libsodium
-            npm install
-            npm run prebuild
-            echo ::set-output name=buildfile::$(ls . | grep .tar)
-      - uses: actions/upload-artifact@v2
+          node-version: 14.x
+      - run: npm run fetch-libsodium
+      - run: npm install
+      - run: npm run prebuild
+      - run: tar --create --verbose --file="${{ github.ref }}-linux-armv7l.tar" --directory "./prebuilds" .
+      - name: Upload build
+        uses: johnwbyrd/update-release@v1.0.0
         with:
-          path: ${{ steps.runcmd.outputs.buildfile }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: ./${{ github.ref }}-linux-aarch64.tar
