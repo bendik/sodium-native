@@ -33,7 +33,7 @@ jobs:
       - run: npm install
       - run: npm run prebuild
       - run: tar --create --verbose --file ${{ github.ref }}-linux-armv7l.tar --directory "./prebuilds" .
-      - uses: johnwbyrd/update-release@v1
+      - uses: johnwbyrd/update-release@v1.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: ./${{ github.ref }}-linux-armv7l.tar
