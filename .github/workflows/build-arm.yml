@@ -33,10 +33,10 @@ jobs:
       - run: npm install
       - run: npm run prebuild
       - run: tar --create --verbose --file ${{ github.ref }}-linux-armv7l.tar --directory "./prebuilds" .
-      - uses: johnwbyrd/update-release@v1
+      - uses: meeDamian/github-release@2.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          asset: ./${{ github.ref }}-linux-armv7l.tar
+          files: ./${{ github.ref }}-linux-armv7l.tar
   aarch64_job:
     runs-on: [self-hosted, Linux, ARM64]
     name: Build aarch64 
