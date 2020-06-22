@@ -56,7 +56,7 @@ jobs:
           draft: true 
           prerelease: false
       - name: Upload aarch64 
-        id: upload-release-asset
+        id: upload-aarch64
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -66,7 +66,7 @@ jobs:
           asset_name: libsodium-linux-aarch64.tar
           asset_content_type: application/tar
       - name: Upload Release Asset
-        id: upload-release-asset
+        id: upload-armv7l
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
