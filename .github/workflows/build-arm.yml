@@ -56,12 +56,12 @@ jobs:
           body: 'Release Notes and changelog'
           draft: true 
           prerelease: false
+      - name: Get version
+        id: get_version
+        run: echo ::set-output name=VERSION::$(git describe --tags)
       - name: Compress builds
         run: |
-          mkdir -p ./refs/tags
-          VERSION="$(git describe --tags)"
-          tar --create --verbose --file="./refs/tags/$VERSION-linux-arm.tar" --directory "prebuilds/linux-armv7l" .
-      - run: echo $VERSION
+          tar --create --verbose --file="./${{ steps.get_version.outputs.VERSION }}-linux-arm.tar" --directory "prebuilds/linux-armv7l" .
       - name: Upload armv7l build
         id: upload-armv7l
         uses: actions/upload-release-asset@v1
@@ -69,8 +69,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ./${{ github.ref }}-linux-armv7l.tar 
-          asset_name: ${{ env.VERSION }}-linux-armv7l.tar
+          asset_path: ./${{ steps.get_version.outputs.VERSION }}-linux-armv7l.tar 
+          asset_name: ${{ steps.get_version.outputs.VERSION }}-linux-armv7l.tar
           asset_content_type: application/x-tar
       #- uses: JS-DevTools/npm-publish@v1
       #  with:
