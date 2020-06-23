@@ -58,8 +58,9 @@ jobs:
           prerelease: false
       - name: Compress builds
         run: |
+          mkdir -p ./ref/tags
           VERSION="$(git describe --tags)"
-          tar --create --verbose --file="$VERSION-linux-arm.tar" --directory "prebuilds/linux-arm" .
+          tar --create --verbose --file="./ref/tags/$VERSION-linux-arm.tar" --directory "prebuilds/linux-armv7l" .
       - name: Upload armv7l build
         id: upload-armv7l
         uses: actions/upload-release-asset@v1
