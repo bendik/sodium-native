@@ -58,9 +58,9 @@ jobs:
           prerelease: false
       - name: Compress builds
         run: |
-          mkdir -p ./ref/tags
+          mkdir -p ./refs/tags
           VERSION="$(git describe --tags)"
-          tar --create --verbose --file="./ref/tags/$VERSION-linux-arm.tar" --directory "prebuilds/linux-armv7l" .
+          tar --create --verbose --file="./refs/tags/$VERSION-linux-arm.tar" --directory "prebuilds/linux-armv7l" .
       - name: Upload armv7l build
         id: upload-armv7l
         uses: actions/upload-release-asset@v1
@@ -71,3 +71,6 @@ jobs:
           asset_path: ${{ github.ref }}-linux-armv7l.tar 
           asset_name: ${{ github.ref }}-linux-armv7l.tar
           asset_content_type: application/x-tar
+      #- uses: JS-DevTools/npm-publish@v1
+      #  with:
+      #    token: ${{ secrets.NPM_TOKEN }}
